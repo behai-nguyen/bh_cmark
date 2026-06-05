@@ -1,0 +1,48 @@
+[package]
+name = "bh_cmark"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+
+[dev-dependencies]
+serde = {version = "1.0.228", features = ["derive"]}
+serde_json = {version = "1.0.149"}
+time = { version = "0.3", features = ["formatting", "local-offset"] }
+
+# The `cargo build` and `cargo run` commands are not expected to work.
+#
+# To build `examples/example_01.rs`:
+# 
+# $ cargo build --example example_01
+#
+# To run `examples/example_01.rs`:
+# 
+# $ cargo run --example example_01
+
+#######################################################################
+# These are on-going development test codes, they have not been 
+# checked in.
+#######################################################################
+# [[bin]]
+# name = "test_main"
+# path = "dev/main.rs"
+
+# [[bin]]
+# name = "test_span"
+# path = "dev/test_span.rs"
+
+# [[bin]]
+# name = "test_main_03"
+# path = "dev/main_03.rs"
+
+# [[bin]]
+# name = "test_main_05"
+# path = "dev/main_05.rs"
+
+# [[bin]]
+# name = "html_main"
+# path = "dev/html_main.rs"
