@@ -1,9 +1,5 @@
 /* 08/04/2026. */
 
-/* 
-Back up before refactoring not to rely on Eof.
-*/
-
 //! Composition (The "Inner Struct" Pattern).
 //! 
 //! Using boundary-based slice parsing rather than sentinel-based stream 
