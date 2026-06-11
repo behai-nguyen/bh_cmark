@@ -32,7 +32,8 @@ use super::token_type::TokenType;
 use super::token::Token;
 
 static BLOCK_ELEMENT_BREAK_CHARACTERS: &[char] = 
-    &['#', '*', '_', '!', '[', ']', '(', ')', '\n', '\\'];
+    &['#', '*', '_', '!', '[', ']', '(', ')', '\r', '\n', '\\'];
+    //&['#', '*', '_', '!', '[', ']', '(', ')', '\n', '\\'];
 
 /// # Note
 /// 
@@ -163,7 +164,8 @@ impl<'a> Scanner<'a> {
     }
 
     fn is_escapable(&self, c: char) -> bool {
-        matches!(c, '#' | '*' | '_' | '!' | '[' | ']' | '(' | ')' | '\n' | '\\')
+        // The list below matches entries in BLOCK_ELEMENT_BREAK_CHARACTERS.
+        matches!(c, '#' | '*' | '_' | '!' | '[' | ']' | '(' | ')' | '\r' | '\n' | '\\')
     }    
 
     /// Identify and collect literal text until hitting one of the [`Token`] 
@@ -205,6 +207,28 @@ impl<'a> Scanner<'a> {
         }
 
         self.add_token(token_vector, TokenType::Text);
+
+        Ok(())
+    }
+
+    fn consume_newline(&mut self, 
+        token_vector: &mut Vec<Token>
+    ) -> ScanResult<()> {
+        // The `\r` character: included in the final rendered text.
+        self.inc_byte_ends(&'\r', true);
+
+        // Move pass `\r`.
+        self.chars.next();
+
+        if self.chars.peek() == Some(&'\n') {
+            self.inc_byte_ends(&'\n', true);
+            // Consume '\n'.
+            self.chars.next();
+        }
+
+        self.add_token(token_vector, TokenType::Newline);
+
+        self.inc_line();
 
         Ok(())
     }
@@ -300,6 +324,7 @@ impl<'a> Scanner<'a> {
             ']' => self.manage_adding_token(token_vector, &c, TokenType::RBracket),
             '(' => self.manage_adding_token(token_vector, &c, TokenType::LParen),
             ')' => self.manage_adding_token(token_vector, &c, TokenType::RParen),
+            '\r' => self.consume_newline(token_vector)?,
             '\n' => {
                 self.inc_line();
                 self.manage_adding_token(token_vector, &c, TokenType::Newline);
